@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Trending Pic - AI Photo Prompts</title>
+
+    <meta
+        name="description"
+        content="Discover trending AI photo prompts and create your own amazing pictures."
+    >
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="navbar">
+
+        <div class="logo">
+            AI Trending Pic
+        </div>
+
+        <button
+            class="menu-btn"
+            onclick="toggleMenu()"
+        >
+            ☰
+        </button>
+
+        <nav id="navMenu">
+
+            <a href="#home">
+                Home
+            </a>
+
+            <a href="#trending">
+                Trending
+            </a>
+
+            <a href="#categories">
+                Categories
+            </a>
+
+            <a href="favorites.html">
+                ❤️ Favorites
+            </a>
+
+        </nav>
+
+    </header>
+
+
+    <!-- ================= HERO ================= -->
+
+    <section
+        class="hero"
+        id="home"
+    >
+
+        <div class="hero-content">
+
+            <div class="badge">
+                🔥 Trending AI Prompts
+            </div>
+
+            <h1>
+
+                See the Trend.<br>
+
+                <span>
+                    Copy the Prompt.
+                </span><br>
+
+                Create Your Pic.
+
+            </h1>
+
+            <p>
+                Discover trending AI photo ideas and prompts.
+                Copy your favorite prompt and create your own picture.
+            </p>
+
+
+            <!-- SEARCH -->
+
+            <div class="search-box">
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search AI photo prompts..."
+                >
+
+                <button
+                    onclick="searchPrompts()"
+                >
+                    🔍
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================= CATEGORIES ================= -->
+
+    <section
+        class="categories-section"
+        id="categories"
+    >
+
+        <h2>
+            Explore Categories
+        </h2>
+
+
+        <div class="categories">
+
+            <button
+                onclick="filterCategory('All')"
+            >
+                All
+            </button>
+
+            <button
+                onclick="filterCategory('Portrait')"
+            >
+                👤 Portrait
+            </button>
+
+            <button
+                onclick="filterCategory('Fashion')"
+            >
+                👕 Fashion
+            </button>
+
+            <button
+                onclick="filterCategory('Luxury')"
+            >
+                💎 Luxury
+            </button>
+
+            <button
+                onclick="filterCategory('Attitude')"
+            >
+                😎 Attitude
+            </button>
+
+        </div>
+
+
+        <!-- FAVORITES BUTTON -->
+
+        <div class="favorites-link-box">
+
+            <a
+                href="favorites.html"
+                class="favorites-main-btn"
+            >
+                ❤️ My Favorites
+            </a>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================= TRENDING NOW ================= -->
+
+    <section
+        class="pics-section trending-section"
+        id="trending"
+    >
+
+        <div class="section-title">
+
+            <div>
+
+                <span class="small-title">
+                    🔥 POPULAR RIGHT NOW
+                </span>
+
+                <h2>
+                    Trending Now
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="pic-grid"
+            id="trendingGrid"
+        ></div>
+
+
+        <!-- TRENDING SLIDER DOTS -->
+
+        <div
+            id="trendingDots"
+            class="trending-dots"
+        ></div>
+
+    </section>
+
+
+
+    <!-- ================= LATEST AI PICS ================= -->
+
+    <section
+        class="pics-section"
+        id="latest"
+    >
+
+        <div class="section-title">
+
+            <div>
+
+                <span class="small-title">
+                    ✨ LATEST
+                </span>
+
+                <h2>
+                    Latest AI Pics
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="pic-grid"
+            id="promptGrid"
+        ></div>
+
+    </section>
+
+
+
+    <!-- ================= NO RESULTS ================= -->
+
+    <div
+        id="noResults"
+        class="no-results"
+    >
+        No prompts found 😔
+    </div>
+
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer>
+
+        <div class="footer-logo">
+            AI Trending Pic
+        </div>
+
+        <p>
+            Discover trends. Copy prompts. Create your own pictures.
+        </p>
+
+        <p class="copyright">
+            © 2026 AI Trending Pic. All rights reserved.
+        </p>
+
+    </footer>
+
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script type="module"
+        src="script.js"></script>
+
+</body>
+
+</html>

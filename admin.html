@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Login - AI Trending Pic</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <div class="auth-container">
+
+        <div class="auth-box">
+
+            <h1>🔐 Admin Login</h1>
+
+            <p>AI Trending Pic</p>
+
+            <input
+                type="email"
+                id="adminEmail"
+                placeholder="Admin Email"
+            >
+
+            <input
+                type="password"
+                id="adminPassword"
+                placeholder="Password"
+            >
+
+            <button id="adminLoginBtn">
+                Login
+            </button>
+
+            <p id="adminMessage"></p>
+
+        </div>
+
+    </div>
+
+
+    <script type="module">
+
+        import {
+            getAuth,
+            signInWithEmailAndPassword
+        } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+        import { app } from "./firebase.js";
+
+
+        const auth = getAuth(app);
+
+
+        document
+            .getElementById("adminLoginBtn")
+            .addEventListener("click", async () => {
+
+                const email =
+                    document.getElementById("adminEmail").value.trim();
+
+                const password =
+                    document.getElementById("adminPassword").value;
+
+
+                const message =
+                    document.getElementById("adminMessage");
+
+
+                if (!email || !password) {
+
+                    message.textContent =
+                        "Email और Password डालें।";
+
+                    return;
+                }
+
+
+                try {
+
+                    await signInWithEmailAndPassword(
+                        auth,
+                        email,
+                        password
+                    );
+
+                    message.textContent =
+                        "Login Successful ✅";
+                  setTimeout(() => {
+    window.location.href = "admin-dashboard.html";
+}, 500);
+
+
+                    // बाद में यहाँ Admin Dashboard खुलेगा
+
+                } catch (error) {
+
+                    message.textContent =
+                        "Login failed ❌";
+
+                }
+
+            });
+
+    </script>
+
+</body>
+
+</html>

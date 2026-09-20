@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Prompt - AI Trending Pic</title>
+
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+
+        .edit-container {
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .edit-box {
+            background: #17171f;
+            border: 1px solid #34343e;
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .edit-box h1 {
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 13px;
+            border-radius: 10px;
+            border: 1px solid #34343e;
+            background: #20202a;
+            color: #ffffff;
+            font-size: 15px;
+        }
+
+        .form-group textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .trending-box {
+            margin: 15px 0;
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #a78bfa;
+            color: #111116;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .message {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <main class="edit-container">
+
+        <a href="manage-prompts.html" class="back-btn">
+            ← Back to Manage Prompts
+        </a>
+
+        <div class="edit-box">
+
+            <h1>✏️ Edit Prompt</h1>
+
+            <div class="form-group">
+                <label>Title</label>
+                <input id="title" type="text">
+            </div>
+
+            <div class="form-group">
+                <label>Category</label>
+
+                <select id="category">
+                    <option value="Portrait">Portrait</option>
+                    <option value="Fashion">Fashion</option>
+                    <option value="Lifestyle">Lifestyle</option>
+                    <option value="Nature">Nature</option>
+                    <option value="Cars">Cars</option>
+                    <option value="Anime">Anime</option>
+                    <option value="Other">Other</option>
+                </select>
+
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="description"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>AI Prompt</label>
+                <textarea id="prompt"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Image URL</label>
+                <input id="image" type="url">
+            </div>
+
+            <div class="form-group">
+                <label>Tags</label>
+                <input id="tags" type="text">
+            </div>
+
+            <div class="trending-box">
+                <label>
+                    <input id="trending" type="checkbox">
+                    🔥 Mark as Trending
+                </label>
+            </div>
+
+            <button id="saveBtn" class="save-btn">
+                Save Changes
+            </button>
+
+            <div id="message" class="message"></div>
+
+        </div>
+
+    </main>
+
+
+    <script type="module">
+
+        import {
+            getAuth,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+        import {
+            getFirestore,
+            doc,
+            getDoc,
+            updateDoc
+        } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+        import { app } from "./firebase.js";
+
+
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+
+        const params = new URLSearchParams(window.location.search);
+
+        const promptId = params.get("id");
+
+
+        const title = document.getElementById("title");
+        const category = document.getElementById("category");
+        const description = document.getElementById("description");
+        const prompt = document.getElementById("prompt");
+        const image = document.getElementById("image");
+        const tags = document.getElementById("tags");
+        const trending = document.getElementById("trending");
+        const saveBtn = document.getElementById("saveBtn");
+        const message = document.getElementById("message");
+
+
+        if (!promptId) {
+
+            message.textContent = "Prompt ID missing ❌";
+
+            saveBtn.disabled = true;
+
+        }
+
+
+        onAuthStateChanged(auth, async (user) => {
+
+            if (!user) {
+
+                window.location.href = "admin.html";
+
+                return;
+
+            }
+
+
+            if (!promptId) return;
+
+
+            try {
+
+                const promptRef =
+                    doc(db, "prompts", promptId);
+
+                const snapshot =
+                    await getDoc(promptRef);
+
+
+                if (!snapshot.exists()) {
+
+                    message.textContent =
+                        "Prompt not found ❌";
+
+                    return;
+
+                }
+
+
+                const data = snapshot.data();
+
+
+                title.value =
+                    data.title || "";
+
+                category.value =
+                    data.category || "Other";
+
+                description.value =
+                    data.description || "";
+
+                prompt.value =
+                    data.prompt || "";
+
+                image.value =
+                    data.image || "";
+
+                tags.value =
+                    Array.isArray(data.tags)
+                        ? data.tags.join(", ")
+                        : "";
+
+                trending.checked =
+                    data.trending === true;
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                message.textContent =
+                    "Failed to load prompt ❌";
+
+            }
+
+        });
+
+
+        saveBtn.addEventListener("click", async () => {
+
+            if (!promptId) return;
+
+
+            saveBtn.disabled = true;
+
+            saveBtn.textContent =
+                "Saving...";
+
+
+            try {
+
+                const promptRef =
+                    doc(db, "prompts", promptId);
+
+
+                const tagArray =
+                    tags.value
+                        .split(",")
+                        .map(tag => tag.trim())
+                        .filter(tag => tag);
+
+
+                await updateDoc(
+                    promptRef,
+                    {
+                        title: title.value.trim(),
+
+                        category:
+                            category.value,
+
+                        description:
+                            description.value.trim(),
+
+                        prompt:
+                            prompt.value.trim(),
+
+                        image:
+                            image.value.trim(),
+
+                        tags:
+                            tagArray,
+
+                        trending:
+                            trending.checked
+                    }
+                );
+
+
+                message.textContent =
+                    "Prompt Updated Successfully ✅";
+
+                message.style.color =
+                    "#7CFF9B";
+
+
+                setTimeout(() => {
+
+                    window.location.href =
+                        "manage-prompts.html";
+
+                }, 1000);
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                message.textContent =
+                    "Update Failed ❌";
+
+                message.style.color =
+                    "#ff8c8c";
+
+                saveBtn.disabled = false;
+
+                saveBtn.textContent =
+                    "Save Changes";
+
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>

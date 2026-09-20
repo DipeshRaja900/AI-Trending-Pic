@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>My Favorites - AI Trending Pic</title>
+
+    <link
+        rel="stylesheet"
+        href="styles.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="navbar">
+
+        <div class="logo">
+            AI Trending Pic
+        </div>
+
+
+        <button
+            class="menu-btn"
+            onclick="toggleMenu()"
+        >
+            ☰
+        </button>
+
+
+        <nav id="navMenu">
+
+            <a href="index.html">
+                Home
+            </a>
+
+            <a href="index.html#trending">
+                Trending
+            </a>
+
+            <a href="index.html#categories">
+                Categories
+            </a>
+
+            <a href="favorites.html">
+                ❤️ Favorites
+            </a>
+
+        </nav>
+
+    </header>
+
+
+
+    <!-- ================= FAVORITES ================= -->
+
+    <main class="pics-section">
+
+        <div class="section-title">
+
+            <div>
+
+                <span class="small-title">
+                    ❤️ YOUR SAVED PROMPTS
+                </span>
+
+                <h2>
+                    My Favorites
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="loading"
+            class="no-results"
+            style="display:block;"
+        >
+            Loading favorites...
+        </div>
+
+
+        <div
+            id="favoritesGrid"
+            class="pic-grid"
+        ></div>
+
+
+        <div
+            id="emptyFavorites"
+            class="no-results"
+            style="display:none;"
+        >
+            No favorite prompts yet ❤️
+            <br><br>
+
+            <a href="index.html">
+                Explore AI Prompts
+            </a>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script type="module">
+
+        import {
+            getFirebasePrompts
+        } from "./firebase.js";
+
+
+        // ================= MENU =================
+
+        window.toggleMenu = function () {
+
+            const navMenu =
+                document.getElementById("navMenu");
+
+            if (navMenu) {
+
+                navMenu.classList.toggle("show");
+
+            }
+
+        };
+
+
+        // ================= FAVORITES =================
+
+        function getFavorites() {
+
+            return JSON.parse(
+                localStorage.getItem(
+                    "aiTrendingFavorites"
+                ) || "[]"
+            );
+
+        }
+
+
+        // ================= COPY =================
+
+        window.copyPrompt = function (text) {
+
+            if (!text) return;
+
+
+            if (navigator.clipboard) {
+
+                navigator.clipboard
+                    .writeText(text)
+                    .then(() => {
+
+                        alert(
+                            "Prompt copied! ✅"
+                        );
+
+                    })
+                    .catch(() => {
+
+                        fallbackCopy(text);
+
+                    });
+
+            } else {
+
+                fallbackCopy(text);
+
+            }
+
+        };
+
+
+        function fallbackCopy(text) {
+
+            const textarea =
+                document.createElement("textarea");
+
+            textarea.value = text;
+
+            textarea.style.position = "fixed";
+
+            textarea.style.left = "-9999px";
+
+            document.body.appendChild(
+                textarea
+            );
+
+            textarea.select();
+
+
+            try {
+
+                document.execCommand("copy");
+
+                alert(
+                    "Prompt copied! ✅"
+                );
+
+            } catch {
+
+                alert(
+                    "Copy failed ❌"
+                );
+
+            }
+
+
+            document.body.removeChild(
+                textarea
+            );
+
+        }
+
+
+        // ================= REMOVE =================
+
+        window.removeFavorite = function (id) {
+
+            id = String(id);
+
+
+            let favorites =
+                getFavorites();
+
+
+            favorites =
+                favorites.filter(
+                    item =>
+                        String(item) !== id
+                );
+
+
+            localStorage.setItem(
+                "aiTrendingFavorites",
+                JSON.stringify(favorites)
+            );
+
+
+            loadFavorites();
+
+        };
+
+
+        // ================= CARD =================
+
+        function createFavoriteCard(prompt) {
+
+            const card =
+                document.createElement(
+                    "article"
+                );
+
+
+            card.className =
+                "prompt-card";
+
+
+            card.innerHTML = `
+
+                <div class="image-wrapper">
+
+                    <img
+                        class="prompt-image"
+                        src="${prompt.image || ""}"
+                        alt="${prompt.title || "AI Photo"}"
+                        loading="lazy"
+                    >
+
+                    ${
+                        prompt.trending
+                        ? `<div class="trending-badge">
+                                🔥 TRENDING
+                           </div>`
+                        : ""
+                    }
+
+                </div>
+
+
+                <div class="card-content">
+
+                    <div class="card-category">
+                        ${prompt.category || ""}
+                    </div>
+
+
+                    <h3>
+                        ${prompt.title || ""}
+                    </h3>
+
+
+                    <p class="card-description">
+                        ${prompt.description || ""}
+                    </p>
+
+
+                    <div class="card-buttons">
+
+                        <button
+                            class="copy-btn"
+                            onclick="copyPrompt(
+                                ${JSON.stringify(prompt.prompt || "")}
+                            )"
+                        >
+                            📋 Copy
+                        </button>
+
+
+                        <a
+                            href="prompt.html?id=${prompt.id}"
+                        >
+                            View
+                        </a>
+
+                    </div>
+
+
+                    <div class="card-extra-buttons">
+
+                        <button
+                            class="favorite-btn active"
+                            onclick="removeFavorite('${prompt.id}')"
+                        >
+                            ❤️ Remove
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            return card;
+
+        }
+
+
+        // ================= LOAD FAVORITES =================
+
+        async function loadFavorites() {
+
+            const loading =
+                document.getElementById(
+                    "loading"
+                );
+
+
+            const grid =
+                document.getElementById(
+                    "favoritesGrid"
+                );
+
+
+            const empty =
+                document.getElementById(
+                    "emptyFavorites"
+                );
+
+
+            try {
+
+                const allPrompts =
+                    await getFirebasePrompts();
+
+
+                const favorites =
+                    getFavorites();
+
+
+                const favoritePrompts =
+                    allPrompts.filter(
+                        prompt =>
+                            favorites.includes(
+                                String(prompt.id)
+                            )
+                    );
+
+
+                loading.style.display =
+                    "none";
+
+
+                grid.innerHTML =
+                    "";
+
+
+                if (
+                    favoritePrompts.length === 0
+                ) {
+
+                    empty.style.display =
+                        "block";
+
+                    return;
+
+                }
+
+
+                empty.style.display =
+                    "none";
+
+
+                favoritePrompts.forEach(
+                    prompt => {
+
+                        grid.appendChild(
+                            createFavoriteCard(
+                                prompt
+                            )
+                        );
+
+                    }
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Favorites error:",
+                    error
+                );
+
+
+                loading.textContent =
+                    "Firebase data load failed ❌";
+
+            }
+
+        }
+
+
+        // ================= START =================
+
+        loadFavorites();
+
+    </script>
+
+
+</body>
+
+</html>

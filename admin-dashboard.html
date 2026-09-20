@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard - AI Trending Pic</title>
+
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        .admin-dashboard {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .admin-header h1 {
+            margin: 0;
+        }
+
+        .logout-btn {
+            padding: 10px 16px;
+            border: 1px solid #34343e;
+            border-radius: 10px;
+            background: #20202a;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .admin-stat {
+            padding: 20px;
+            border: 1px solid #34343e;
+            border-radius: 14px;
+            background: #17171f;
+            text-align: center;
+        }
+
+        .admin-stat h2 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+
+        .admin-stat p {
+            margin: 0;
+            color: #aaa;
+        }
+
+        .admin-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .admin-action {
+            padding: 25px;
+            border: 1px solid #34343e;
+            border-radius: 14px;
+            background: #17171f;
+        }
+
+        .admin-action h3 {
+            margin-top: 0;
+        }
+
+        .admin-action p {
+            color: #aaa;
+            line-height: 1.5;
+        }
+
+        .admin-action button {
+            padding: 11px 18px;
+            border: 0;
+            border-radius: 9px;
+            background: #a78bfa;
+            color: #111116;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+
+            .admin-dashboard {
+                margin: 20px auto;
+                padding: 15px;
+            }
+
+            .admin-header {
+                align-items: flex-start;
+            }
+
+            .admin-header h1 {
+                font-size: 24px;
+            }
+
+            .admin-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="admin-dashboard">
+
+        <div class="admin-header">
+
+            <div>
+                <h1>⚙️ Admin Dashboard</h1>
+                <p>AI Trending Pic</p>
+            </div>
+
+            <button
+                class="logout-btn"
+                id="logoutBtn">
+                Logout
+            </button>
+
+        </div>
+
+
+        <section class="admin-stats">
+
+            <div class="admin-stat">
+                <h2 id="totalPrompts">0</h2>
+                <p>Total Prompts</p>
+            </div>
+
+            <div class="admin-stat">
+                <h2 id="trendingPrompts">0</h2>
+                <p>Trending</p>
+            </div>
+
+            <div class="admin-stat">
+                <h2 id="totalViews">0</h2>
+                <p>Total Views</p>
+            </div>
+
+        </section>
+
+
+        <section class="admin-actions">
+
+            <div class="admin-action">
+
+                <h3>➕ Add Prompt</h3>
+
+                <p>
+                    नया AI image prompt और image information
+                    Firestore में जोड़ें।
+                </p>
+
+               <button onclick="window.location.href='add-prompt.html'">
+                                  Add Prompt
+         </button>
+
+            </div>
+
+
+            <div class="admin-action">
+
+                <h3>📝 Manage Prompts</h3>
+
+                <p>
+                    Existing prompts को देखना और manage करना।
+                </p>
+
+         <button onclick="window.location.href='manage-prompts.html'">
+    Manage
+</button>
+            </div>
+
+
+            <div class="admin-action">
+
+                <h3>🔥 Trending</h3>
+
+                <p>
+                    Trending prompts को manage करें।
+                </p>
+
+                <button>
+                    Manage Trending
+                </button>
+
+            </div>
+
+
+            <div class="admin-action">
+
+                <h3>🖼️ Images</h3>
+
+                <p>
+                    Prompt images और image URLs manage करें।
+                </p>
+
+                <button>
+                    Manage Images
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script type="module">
+
+        import {
+            getAuth,
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+        import { app, getFirebasePrompts }
+            from "./firebase.js";
+
+
+        const auth = getAuth(app);
+
+
+        onAuthStateChanged(auth, async (user) => {
+
+            if (!user) {
+
+                window.location.href = "admin.html";
+
+                return;
+            }
+
+
+            try {
+
+                const prompts =
+                    await getFirebasePrompts();
+
+
+                document.getElementById(
+                    "totalPrompts"
+                ).textContent = prompts.length;
+
+
+                const trending =
+    [...prompts]
+        .sort((a, b) => {
+
+            const scoreA =
+                ((Number(a.likes) || 0) * 2) +
+                (Number(a.views) || 0);
+
+            const scoreB =
+                ((Number(b.likes) || 0) * 2) +
+                (Number(b.views) || 0);
+
+            return scoreB - scoreA;
+
+        })
+        .slice(0, 3);
+
+
+document.getElementById(
+    "trendingPrompts"
+).textContent = trending.length;
+
+                const totalViews =
+                    prompts.reduce(
+                        (total, prompt) =>
+                            total + (Number(prompt.views) || 0),
+                        0
+                    );
+
+
+                document.getElementById(
+                    "totalViews"
+                ).textContent = totalViews;
+
+            } catch (error) {
+
+                console.error(
+                    "Dashboard data error:",
+                    error
+                );
+
+            }
+
+        });
+
+
+        document
+            .getElementById("logoutBtn")
+            .addEventListener("click", async () => {
+
+                await signOut(auth);
+
+                window.location.href = "admin.html";
+
+            });
+
+    </script>
+
+</body>
+
+</html>

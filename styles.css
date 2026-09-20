@@ -1,0 +1,597 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #0b0b0f;
+    color: #ffffff;
+    line-height: 1.6;
+}
+
+
+/* ================= HEADER ================= */
+
+.navbar {
+    height: 70px;
+    padding: 0 7%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #111116;
+    border-bottom: 1px solid #25252d;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-size: 23px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.navbar nav {
+    display: flex;
+    gap: 30px;
+}
+
+.navbar nav a {
+    color: #cccccc;
+    text-decoration: none;
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+.navbar nav a:hover {
+    color: #ffffff;
+}
+
+.menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+
+/* ================= HERO ================= */
+
+.hero {
+    min-height: 570px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 70px 20px;
+    background:
+        radial-gradient(circle at center, #242438 0%, #0b0b0f 55%);
+}
+
+.hero-content {
+    max-width: 850px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 8px 16px;
+    border: 1px solid #383845;
+    border-radius: 30px;
+    background: #15151c;
+    color: #dddddd;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+.hero h1 {
+    font-size: clamp(42px, 7vw, 75px);
+    line-height: 1.05;
+    letter-spacing: -3px;
+    margin-bottom: 25px;
+}
+
+.hero h1 span {
+    color: #a78bfa;
+}
+
+.hero p {
+    max-width: 650px;
+    margin: auto;
+    color: #aaaaaf;
+    font-size: 17px;
+}
+
+
+/* ================= SEARCH ================= */
+
+.search-box {
+    max-width: 600px;
+    margin: 35px auto 0;
+    display: flex;
+    background: #17171e;
+    border: 1px solid #363640;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.search-box input {
+    flex: 1;
+    min-width: 0;
+    padding: 17px 18px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    font-size: 15px;
+}
+
+.search-box input::placeholder {
+    color: #77777f;
+}
+
+.search-box button {
+    width: 60px;
+    border: none;
+    background: #a78bfa;
+    color: #111116;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+
+/* ================= CATEGORIES ================= */
+
+.categories-section {
+    padding: 60px 7% 25px;
+    text-align: center;
+}
+
+.categories-section h2 {
+    font-size: 30px;
+    margin-bottom: 25px;
+}
+
+.categories {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.categories button {
+    padding: 11px 20px;
+    border-radius: 30px;
+    border: 1px solid #33333c;
+    background: #15151c;
+    color: #dddddd;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.categories button:hover {
+    background: #292936;
+    border-color: #555563;
+}
+
+
+/* ================= TRENDING ================= */
+
+.pics-section {
+    padding: 50px 7% 80px;
+}
+
+.section-title {
+    margin-bottom: 30px;
+}
+
+.small-title {
+    color: #a78bfa;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.section-title h2 {
+    font-size: 34px;
+    margin-top: 5px;
+}
+
+
+/* ================= CARD GRID ================= */
+
+.pic-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+
+/* ================= CARD ================= */
+
+.prompt-card {
+    background: #15151c;
+    border: 1px solid #292932;
+    border-radius: 18px;
+    overflow: hidden;
+    transition: transform 0.25s, border-color 0.25s;
+}
+
+.prompt-card:hover {
+    transform: translateY(-5px);
+    border-color: #4b4b58;
+}
+
+.prompt-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    display: block;
+}
+
+.card-content {
+    padding: 20px;
+}
+
+.card-category {
+    color: #a78bfa;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.card-content h3 {
+    font-size: 21px;
+    margin: 7px 0;
+}
+
+.card-description {
+    color: #9999a2;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+
+/* ================= CARD BUTTONS ================= */
+
+.card-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.card-buttons button,
+.card-buttons a {
+    flex: 1;
+    padding: 11px;
+    border-radius: 9px;
+    border: 1px solid #34343e;
+    background: #20202a;
+    color: white;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.card-buttons button:hover,
+.card-buttons a:hover {
+    background: #2c2c38;
+}
+
+.copy-btn {
+    background: #a78bfa !important;
+    color: #111116 !important;
+    border-color: #a78bfa !important;
+}
+
+
+/* ================= NO RESULTS ================= */
+
+.no-results {
+    display: none;
+    text-align: center;
+    padding: 50px 20px;
+    color: #9999a2;
+    font-size: 18px;
+}
+
+
+/* ================= FOOTER ================= */
+
+footer {
+    text-align: center;
+    padding: 50px 20px;
+    background: #111116;
+    border-top: 1px solid #25252d;
+}
+
+.footer-logo {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+footer p {
+    color: #888891;
+    font-size: 14px;
+}
+
+.copyright {
+    margin-top: 20px;
+    font-size: 12px;
+}
+
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 800px) {
+
+    .navbar {
+        padding: 0 20px;
+    }
+
+    .menu-btn {
+        display: block;
+    }
+
+    .navbar nav {
+        display: none;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        gap: 0;
+        background: #111116;
+        border-bottom: 1px solid #25252d;
+    }
+
+    .navbar nav.show {
+        display: flex;
+    }
+
+    .navbar nav a {
+        padding: 15px 20px;
+        border-top: 1px solid #22222a;
+    }
+
+    .hero {
+        min-height: 520px;
+        padding: 50px 20px;
+    }
+
+    .hero h1 {
+        letter-spacing: -2px;
+    }
+
+    .hero p {
+        font-size: 15px;
+    }
+
+    .pics-section {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .pic-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .prompt-image {
+        height: 280px;
+    }
+
+    .categories-section {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
+
+/* ================= CARD EXTRA BUTTONS ================= */
+
+.card-extra-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.card-extra-buttons button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 9px;
+    border: 1px solid #34343e;
+    background: #20202a;
+    color: #cccccc;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.card-extra-buttons button:hover {
+    background: #2c2c38;
+}
+
+.favorite-btn.active {
+    color: #ff6b81;
+    border-color: #55505a;
+}
+
+
+/* ================= FAVORITES MAIN BUTTON ================= */
+
+.favorites-link-box {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.favorites-main-btn {
+    display: inline-block;
+    padding: 13px 24px;
+    border-radius: 12px;
+    background: #a78bfa;
+    color: #111116;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+.favorites-main-btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+
+/* ================= TRENDING BADGE ================= */
+
+.image-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.image-wrapper .prompt-image {
+    width: 100%;
+    display: block;
+}
+
+.trending-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 7px 11px;
+    background: rgba(0, 0, 0, 0.75);
+    border: 1px solid #444450;
+    border-radius: 20px;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(6px);
+}
+
+
+/* ================= TRENDING AUTO SLIDER ================= */
+
+#trendingGrid {
+    display: block;
+    position: relative;
+    width: 100%;
+}
+
+#trendingGrid .prompt-card {
+    display: none;
+    width: 100%;
+    transform: none;
+    transform-origin: center;
+}
+
+#trendingGrid .prompt-card.trending-active {
+    display: block;
+    animation: trendingFade 0.6s ease;
+}
+
+@keyframes trendingFade {
+
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+}
+
+
+/* ================= TRENDING DOTS ================= */
+
+.trending-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.trending-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #444450;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.trending-dot.active {
+    width: 22px;
+    border-radius: 10px;
+    background: #a78bfa;
+}
+
+
+/* ================= TRENDING MOBILE ================= */
+
+@media (max-width: 600px) {
+
+    #trendingGrid .prompt-card {
+        width: 100%;
+        transform: none;
+    }
+
+    #trendingGrid .card-content {
+        padding: 16px;
+    }
+
+    #trendingGrid .card-content h3 {
+        font-size: 19px;
+    }
+
+    #trendingGrid .card-description {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    #trendingGrid .card-stats {
+        font-size: 13px;
+    }
+
+    #trendingGrid .card-extra-buttons {
+        gap: 7px;
+    }
+
+    #trendingGrid .card-extra-buttons button {
+        padding: 10px 5px;
+        font-size: 12px;
+    }
+
+}
+/* ================= TRENDING SMALL CARD ================= */
+
+#trendingGrid .prompt-card {
+    transform: scale(0.90);
+    transform-origin: top center;
+}
+/* ================= TRENDING TO LATEST GAP ================= */
+
+#latest {
+    margin-top: 25px !important;
+}
+
+/* ================= COPY PROMPT BUTTON ================= */
+
+.card-extra-buttons button:first-child {
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}

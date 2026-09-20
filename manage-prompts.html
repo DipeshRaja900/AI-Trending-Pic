@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Manage Prompts - AI Trending Pic</title>
+
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+
+        .manage-container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .manage-header {
+            margin-bottom: 25px;
+        }
+
+        .manage-header h1 {
+            margin-bottom: 5px;
+        }
+
+        .manage-header p {
+            color: #aaa;
+        }
+
+        .prompt-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .manage-card {
+            padding: 16px;
+            background: #17171f;
+            border: 1px solid #34343e;
+            border-radius: 14px;
+        }
+
+        .manage-top {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 18px;
+        }
+
+        .manage-card img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .manage-info h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+
+        .manage-category {
+            color: #a78bfa;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .manage-description {
+            color: #aaa;
+            line-height: 1.5;
+        }
+
+        .manage-stats {
+            color: #aaa;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        .trending-label {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 5px 9px;
+            border-radius: 15px;
+            background: #25232e;
+            color: #ffffff;
+            font-size: 12px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .action-buttons button {
+            border: none;
+            border-radius: 9px;
+            padding: 10px 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .edit-btn {
+            background: #a78bfa;
+            color: #111116;
+        }
+
+        .delete-btn {
+            background: #ff5c5c;
+            color: white;
+        }
+
+        .trend-btn {
+            background: #25232e;
+            color: white;
+            border: 1px solid #444450 !important;
+        }
+
+        .edit-box {
+            margin-top: 15px;
+            padding: 15px;
+            background: #20202a;
+            border-radius: 12px;
+        }
+
+        .edit-box label {
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            color: #ddd;
+            font-weight: bold;
+        }
+
+        .edit-box input,
+        .edit-box textarea,
+        .edit-box select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px;
+            border-radius: 8px;
+            border: 1px solid #444450;
+            background: #17171f;
+            color: white;
+            font-size: 14px;
+        }
+
+        .edit-box textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .edit-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .save-edit-btn,
+        .cancel-edit-btn {
+            border: none;
+            border-radius: 9px;
+            padding: 10px 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .save-edit-btn {
+            background: #a78bfa;
+            color: #111116;
+        }
+
+        .cancel-edit-btn {
+            background: #34343e;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #aaa;
+        }
+
+        .error {
+            text-align: center;
+            padding: 30px;
+            color: #ff8c8c;
+        }
+
+        .message {
+            text-align: center;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            background: #20202a;
+            color: #ddd;
+        }
+
+        @media (max-width: 600px) {
+
+            .manage-container {
+                padding: 15px;
+            }
+
+            .manage-top {
+                grid-template-columns: 100px 1fr;
+                gap: 12px;
+            }
+
+            .manage-card img {
+                width: 100px;
+                height: 100px;
+            }
+
+            .manage-info h3 {
+                font-size: 16px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <main class="manage-container">
+
+        <a href="admin-dashboard.html" class="back-btn">
+            ← Back to Dashboard
+        </a>
+
+        <div class="manage-header">
+
+            <h1>📝 Manage Prompts</h1>
+
+            <p>
+                All AI Trending Pic prompts
+            </p>
+
+        </div>
+
+        <div id="message"></div>
+
+        <div id="promptList" class="prompt-list">
+
+            <div class="loading">
+                Loading prompts...
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <script type="module">
+
+        import {
+            getAuth,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+        import {
+            doc,
+            updateDoc,
+            deleteDoc
+        } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+        import {
+            app,
+            db,
+            getFirebasePrompts
+        } from "./firebase.js";
+
+
+        const auth = getAuth(app);
+
+        const promptList =
+            document.getElementById("promptList");
+
+        const message =
+            document.getElementById("message");
+
+
+        function escapeHTML(value) {
+
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        function showMessage(text) {
+
+            message.textContent = text;
+
+            setTimeout(() => {
+
+                message.textContent = "";
+
+            }, 2500);
+
+        }
+
+
+        async function loadPrompts() {
+
+            try {
+
+                const prompts =
+                    await getFirebasePrompts();
+
+                promptList.innerHTML = "";
+
+
+                if (prompts.length === 0) {
+
+                    promptList.innerHTML =
+                        '<div class="loading">No prompts found.</div>';
+
+                    return;
+
+                }
+
+
+                prompts.forEach((prompt) => {
+
+                    createCard(prompt);
+
+                });
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                promptList.innerHTML =
+                    '<div class="error">Failed to load prompts.</div>';
+
+            }
+
+        }
+
+
+        function createCard(prompt) {
+
+            const card =
+                document.createElement("div");
+
+            card.className = "manage-card";
+
+            const trendingText =
+                prompt.trending === true
+                    ? "🔥 Trending ON"
+                    : "🔥 Mark Trending";
+
+
+            card.innerHTML = `
+
+                <div class="manage-top">
+
+                    <img
+                        src="${escapeHTML(prompt.image || "")}"
+                        alt="${escapeHTML(prompt.title || "AI Prompt")}"
+                    >
+
+                    <div class="manage-info">
+
+                        <div class="manage-category">
+                            ${escapeHTML(prompt.category || "Other")}
+                        </div>
+
+                        <h3>
+                            ${escapeHTML(prompt.title || "Untitled Prompt")}
+                        </h3>
+
+                        <p class="manage-description">
+                            ${escapeHTML(prompt.description || "")}
+                        </p>
+
+                        <div class="manage-stats">
+                            ❤️ ${Number(prompt.likes) || 0}
+                            &nbsp;&nbsp;
+                            👁️ ${Number(prompt.views) || 0}
+                        </div>
+
+                        ${
+                            prompt.trending === true
+                            ? `
+                                <span class="trending-label">
+                                    🔥 Trending
+                                </span>
+                              `
+                            : ""
+                        }
+
+                    </div>
+
+                </div>
+
+
+                <div class="action-buttons">
+
+                    <button
+                        class="edit-btn"
+                        data-action="edit">
+                        ✏️ Edit
+                    </button>
+
+                    <button
+                        class="delete-btn"
+                        data-action="delete">
+                        🗑️ Delete
+                    </button>
+
+                    <button
+                        class="trend-btn"
+                        data-action="trending">
+                        ${trendingText}
+                    </button>
+
+                </div>
+
+                <div
+                    class="edit-box"
+                    style="display:none;">
+
+                </div>
+
+            `;
+
+
+            const editButton =
+                card.querySelector('[data-action="edit"]');
+
+            const deleteButton =
+                card.querySelector('[data-action="delete"]');
+
+            const trendingButton =
+                card.querySelector('[data-action="trending"]');
+
+            const editBox =
+                card.querySelector(".edit-box");
+
+
+            editButton.addEventListener("click", () => {
+
+                openEditForm(
+                    prompt,
+                    editBox
+                );
+
+            });
+
+
+            deleteButton.addEventListener("click", async () => {
+
+                const confirmDelete =
+                    confirm(
+                        `Delete "${prompt.title}"?`
+                    );
+
+                if (!confirmDelete) return;
+
+
+                try {
+
+                    await deleteDoc(
+                        doc(db, "prompts", String(prompt.id))
+                    );
+
+                    showMessage("Prompt deleted successfully 🗑️");
+
+                    await loadPrompts();
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    showMessage(
+                        "Delete failed. Check Firebase rules."
+                    );
+
+                }
+
+            });
+
+
+            trendingButton.addEventListener(
+                "click",
+                async () => {
+
+                    try {
+
+                        const newValue =
+                            prompt.trending !== true;
+
+                        await updateDoc(
+                            doc(
+                                db,
+                                "prompts",
+                                String(prompt.id)
+                            ),
+                            {
+                                trending: newValue
+                            }
+                        );
+
+                        showMessage(
+                            newValue
+                                ? "Marked as Trending 🔥"
+                                : "Removed from Trending"
+                        );
+
+                        await loadPrompts();
+
+                    } catch (error) {
+
+                        console.error(error);
+
+                        showMessage(
+                            "Trending update failed."
+                        );
+
+                    }
+
+                }
+            );
+
+
+            promptList.appendChild(card);
+
+        }
+
+
+        function openEditForm(prompt, editBox) {
+
+            editBox.style.display = "block";
+
+
+            editBox.innerHTML = `
+
+                <label>Title</label>
+
+                <input
+                    id="editTitle"
+                    value="${escapeHTML(prompt.title || "")}"
+                >
+
+
+                <label>Category</label>
+
+                <select id="editCategory">
+
+                    <option value="Portrait">
+                        Portrait
+                    </option>
+
+                    <option value="Fashion">
+                        Fashion
+                    </option>
+
+                    <option value="Lifestyle">
+                        Lifestyle
+                    </option>
+
+                    <option value="Nature">
+                        Nature
+                    </option>
+
+                    <option value="Cars">
+                        Cars
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+
+                <label>Description</label>
+
+                <textarea id="editDescription">${escapeHTML(
+                    prompt.description || ""
+                )}</textarea>
+
+
+                <label>AI Prompt</label>
+
+                <textarea id="editPrompt">${escapeHTML(
+                    prompt.prompt || ""
+                )}</textarea>
+
+
+                <label>Image URL</label>
+
+                <input
+                    id="editImage"
+                    value="${escapeHTML(prompt.image || "")}"
+                >
+
+
+                <label>Tags</label>
+
+                <input
+                    id="editTags"
+                    value="${escapeHTML(
+                        Array.isArray(prompt.tags)
+                            ? prompt.tags.join(", ")
+                            : prompt.tags || ""
+                    )}"
+                >
+
+
+                <div class="edit-buttons">
+
+                    <button
+                        class="save-edit-btn"
+                        id="saveEdit">
+                        💾 Save Changes
+                    </button>
+
+                    <button
+                        class="cancel-edit-btn"
+                        id="cancelEdit">
+                        Cancel
+                    </button>
+
+                </div>
+
+            `;
+
+
+            const category =
+                editBox.querySelector("#editCategory");
+
+            category.value =
+                prompt.category || "Other";
+
+
+            editBox
+                .querySelector("#cancelEdit")
+                .addEventListener("click", () => {
+
+                    editBox.style.display = "none";
+
+                });
+
+
+            editBox
+                .querySelector("#saveEdit")
+                .addEventListener("click", async () => {
+
+                    const title =
+                        editBox
+                            .querySelector("#editTitle")
+                            .value
+                            .trim();
+
+                    const categoryValue =
+                        editBox
+                            .querySelector("#editCategory")
+                            .value;
+
+                    const description =
+                        editBox
+                            .querySelector("#editDescription")
+                            .value
+                            .trim();
+
+                    const aiPrompt =
+                        editBox
+                            .querySelector("#editPrompt")
+                            .value
+                            .trim();
+
+                    const image =
+                        editBox
+                            .querySelector("#editImage")
+                            .value
+                            .trim();
+
+                    const tagsText =
+                        editBox
+                            .querySelector("#editTags")
+                            .value
+                            .trim();
+
+
+                    if (!title || !aiPrompt) {
+
+                        alert(
+                            "Title और AI Prompt जरूरी हैं।"
+                        );
+
+                        return;
+
+                    }
+
+
+                    const tags =
+                        tagsText
+                            .split(",")
+                            .map(tag => tag.trim())
+                            .filter(tag => tag);
+
+
+                    try {
+
+                        await updateDoc(
+                            doc(
+                                db,
+                                "prompts",
+                                String(prompt.id)
+                            ),
+                            {
+                                title: title,
+                                category: categoryValue,
+                                description: description,
+                                prompt: aiPrompt,
+                                image: image,
+                                tags: tags
+                            }
+                        );
+
+
+                        showMessage(
+                            "Prompt updated successfully ✅"
+                        );
+
+                        await loadPrompts();
+
+                    } catch (error) {
+
+                        console.error(error);
+
+                        showMessage(
+                            "Update failed. Check Firebase rules."
+                        );
+
+                    }
+
+                });
+
+        }
+
+
+        onAuthStateChanged(
+            auth,
+            async (user) => {
+
+                if (!user) {
+
+                    window.location.href =
+                        "admin.html";
+
+                    return;
+
+                }
+
+
+                await loadPrompts();
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

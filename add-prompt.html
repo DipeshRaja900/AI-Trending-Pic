@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Prompt - AI Trending Pic</title>
+
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+
+        .add-prompt-container {
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .add-prompt-box {
+            background: #17171f;
+            border: 1px solid #34343e;
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .add-prompt-box h1 {
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            border-radius: 9px;
+            border: 1px solid #34343e;
+            background: #20202a;
+            color: #ffffff;
+            font-size: 15px;
+        }
+
+        .form-group textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .checkbox-group input {
+            width: 20px;
+            height: 20px;
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 13px;
+            border: 0;
+            border-radius: 10px;
+            background: #a78bfa;
+            color: #111116;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        #message {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <main class="add-prompt-container">
+
+        <a href="admin-dashboard.html" class="back-btn">
+            ← Back to Dashboard
+        </a>
+
+        <div class="add-prompt-box">
+
+            <h1>➕ Add Prompt</h1>
+
+            <p>Add a new AI prompt to AI Trending Pic.</p>
+
+
+            <div class="form-group">
+
+                <label for="title">
+                    Title
+                </label>
+
+                <input
+                    type="text"
+                    id="title"
+                    placeholder="Example: Cinematic Street Portrait"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="category">
+                    Category
+                </label>
+
+                <select id="category">
+
+                    <option value="">
+                        Select Category
+                    </option>
+
+                    <option value="Portrait">
+                        Portrait
+                    </option>
+
+                    <option value="Fashion">
+                        Fashion
+                    </option>
+
+                    <option value="Lifestyle">
+                        Lifestyle
+                    </option>
+
+                    <option value="Cinematic">
+                        Cinematic
+                    </option>
+
+                    <option value="Nature">
+                        Nature
+                    </option>
+
+                    <option value="Travel">
+                        Travel
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="description">
+                    Description
+                </label>
+
+                <textarea
+                    id="description"
+                    placeholder="Short description"
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="prompt">
+                    AI Prompt
+                </label>
+
+                <textarea
+                    id="prompt"
+                    placeholder="Write the complete AI image prompt"
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="image">
+                    Image URL
+                </label>
+
+                <input
+                    type="url"
+                    id="image"
+                    placeholder="https://..."
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="tags">
+                    Tags
+                </label>
+
+                <input
+                    type="text"
+                    id="tags"
+                    placeholder="portrait, cinematic, street"
+                >
+
+            </div>
+
+
+            <div class="checkbox-group">
+
+                <input
+                    type="checkbox"
+                    id="trending"
+                >
+
+                <label for="trending">
+                    🔥 Mark as Trending
+                </label>
+
+            </div>
+
+
+            <button
+                class="save-btn"
+                id="saveBtn"
+            >
+                Save Prompt
+            </button>
+
+
+            <p id="message"></p>
+
+        </div>
+
+    </main>
+
+
+    <script type="module">
+
+        import {
+            getAuth,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+        import {
+            getFirestore,
+            collection,
+            addDoc
+        } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+        import { app } from "./firebase.js";
+
+
+        const auth = getAuth(app);
+
+        const db = getFirestore(app);
+
+
+        onAuthStateChanged(auth, (user) => {
+
+            if (!user) {
+
+                window.location.href = "admin.html";
+
+            }
+
+        });
+
+
+        document
+            .getElementById("saveBtn")
+            .addEventListener("click", async () => {
+
+                const title =
+                    document.getElementById("title").value.trim();
+
+                const category =
+                    document.getElementById("category").value;
+
+                const description =
+                    document.getElementById("description").value.trim();
+
+                const prompt =
+                    document.getElementById("prompt").value.trim();
+
+                const image =
+                    document.getElementById("image").value.trim();
+
+                const tagsText =
+                    document.getElementById("tags").value.trim();
+
+                const trending =
+                    document.getElementById("trending").checked;
+
+                const message =
+                    document.getElementById("message");
+
+
+                if (
+                    !title ||
+                    !category ||
+                    !description ||
+                    !prompt ||
+                    !image
+                ) {
+
+                    message.textContent =
+                        "Please fill all required fields.";
+
+                    return;
+
+                }
+
+
+                const tags =
+                    tagsText
+                        .split(",")
+                        .map(tag => tag.trim())
+                        .filter(tag => tag !== "");
+
+
+                try {
+
+                    await addDoc(
+                        collection(db, "prompts"),
+                        {
+                            title: title,
+                            category: category,
+                            description: description,
+                            prompt: prompt,
+                            image: image,
+                            tags: tags,
+                            likes: 0,
+                            views: 0,
+                            trending: trending
+                        }
+                    );
+
+
+                    message.textContent =
+                        "Prompt added successfully ✅";
+
+
+                    document
+                        .getElementById("title")
+                        .value = "";
+
+                    document
+                        .getElementById("category")
+                        .value = "";
+
+                    document
+                        .getElementById("description")
+                        .value = "";
+
+                    document
+                        .getElementById("prompt")
+                        .value = "";
+
+                    document
+                        .getElementById("image")
+                        .value = "";
+
+                    document
+                        .getElementById("tags")
+                        .value = "";
+
+                    document
+                        .getElementById("trending")
+                        .checked = false;
+
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    message.textContent =
+                        "Error: " + error.message;
+
+                }
+
+            });
+
+    </script>
+
+</body>
+
+</html>
