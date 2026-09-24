@@ -594,7 +594,32 @@
 
 
                 currentItem = item;
+// ================= SEO =================
 
+document.title =
+    (item.title || "AI Trending Pic") +
+    " | AI Photo Prompt";
+
+let metaDescription =
+    document.querySelector('meta[name="description"]');
+
+if (!metaDescription) {
+
+    metaDescription =
+        document.createElement("meta");
+
+    metaDescription.name =
+        "description";
+
+    document.head.appendChild(
+        metaDescription
+    );
+
+}
+
+metaDescription.content =
+    item.description ||
+    "Discover this AI photo prompt on AI Trending Pic.";
 
                 document.getElementById(
                     "promptContent"
