@@ -620,11 +620,38 @@
 
 
                 currentItem = item;
+                // ================= DYNAMIC STRUCTURED DATA =================
+
+const structuredData =
+    document.getElementById("promptStructuredData");
+
+if (structuredData) {
+
+    structuredData.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name":
+            (item.title || "AI Trending Pic") +
+            " | AI Photo Prompt",
+        "description":
+            item.description ||
+            "Discover this AI photo prompt on AI Trending Pic.",
+        "image": item.image || "",
+        "url": window.location.href,
+        "isPartOf": {
+            "@type": "WebSite",
+            "name": "AI Trending Pic",
+            "url":
+                "https://dipeshraja900.github.io/AI-Trending-Pic/"
+        }
+    });
+}
 // ================= SEO =================
 
 document.title =
     (item.title || "AI Trending Pic") +
     " | AI Photo Prompt";
+            
 // ================= DYNAMIC SOCIAL SEO =================
 
 const ogTitle = document.querySelector('meta[property="og:title"]');
