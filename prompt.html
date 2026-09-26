@@ -611,7 +611,52 @@
 document.title =
     (item.title || "AI Trending Pic") +
     " | AI Photo Prompt";
+// ================= DYNAMIC SOCIAL SEO =================
 
+const ogTitle = document.querySelector('meta[property="og:title"]');
+const ogDescription = document.querySelector('meta[property="og:description"]');
+const ogImage = document.querySelector('meta[property="og:image"]');
+const ogUrl = document.querySelector('meta[property="og:url"]');
+
+if (ogTitle) {
+    ogTitle.content =
+        (item.title || "AI Trending Pic") +
+        " | AI Photo Prompt";
+}
+
+if (ogDescription) {
+    ogDescription.content =
+        item.description ||
+        "Discover this AI photo prompt on AI Trending Pic.";
+}
+
+if (ogImage && item.image) {
+    ogImage.content = item.image;
+}
+
+if (ogUrl) {
+    ogUrl.content = window.location.href;
+}
+
+const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+const twitterDescription = document.querySelector('meta[name="twitter:description"]');
+const twitterImage = document.querySelector('meta[name="twitter:image"]');
+
+if (twitterTitle) {
+    twitterTitle.content =
+        (item.title || "AI Trending Pic") +
+        " | AI Photo Prompt";
+}
+
+if (twitterDescription) {
+    twitterDescription.content =
+        item.description ||
+        "Discover this AI photo prompt on AI Trending Pic.";
+}
+
+if (twitterImage && item.image) {
+    twitterImage.content = item.image;
+}
 let metaDescription =
     document.querySelector('meta[name="description"]');
 
