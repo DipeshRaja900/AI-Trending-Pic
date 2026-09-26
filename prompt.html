@@ -621,6 +621,22 @@ metaDescription.content =
     item.description ||
     "Discover this AI photo prompt on AI Trending Pic.";
 
+// ================= CANONICAL URL =================
+
+let canonical = document.querySelector('link[rel="canonical"]');
+
+if (!canonical) {
+    canonical = document.createElement("link");
+    canonical.rel = "canonical";
+    document.head.appendChild(canonical);
+}
+
+canonical.href =
+    window.location.origin +
+    window.location.pathname +
+    "?id=" +
+    encodeURIComponent(item.id);
+                
                 document.getElementById(
                     "promptContent"
                 ).style.display = "block";
