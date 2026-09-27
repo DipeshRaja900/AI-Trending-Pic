@@ -314,7 +314,8 @@ function createPromptCard(
             <img
                 class="prompt-image"
                 src="${prompt.image || ""}"
-                alt="${prompt.title || "AI Photo"}"
+                alt="${prompt.title || "AI 
+                       Photo"} - AI photo prompt"
                 loading="lazy"
             >
 
