@@ -1,1 +1,374 @@
 
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Manage Trending - AI Trending Pic</title>
+
+    <meta name="robots" content="noindex, nofollow">
+
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        .trending-admin {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .trending-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .trending-header h1 {
+            margin: 0;
+        }
+
+        .back-btn {
+            padding: 10px 16px;
+            border: 1px solid #34343e;
+            border-radius: 10px;
+            background: #20202a;
+            color: white;
+            text-decoration: none;
+        }
+
+        .trending-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .trending-card {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #34343e;
+            border-radius: 14px;
+            background: #17171f;
+        }
+
+        .trending-card img {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+
+        .trending-info {
+            flex: 1;
+        }
+
+        .trending-info h3 {
+            margin: 0 0 6px;
+        }
+
+        .trending-info p {
+            margin: 4px 0;
+            color: #aaa;
+        }
+
+        .trending-status {
+            font-size: 13px;
+            margin-top: 7px;
+        }
+
+        .status-on {
+            color: #4ade80;
+        }
+
+        .status-off {
+            color: #aaa;
+        }
+
+        .trend-btn {
+            padding: 10px 15px;
+            border: 0;
+            border-radius: 9px;
+            background: #a78bfa;
+            color: #111116;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .trend-btn.off {
+            background: #34343e;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            color: #aaa;
+            padding: 30px;
+        }
+
+        @media (max-width: 600px) {
+
+            .trending-admin {
+                margin: 20px auto;
+                padding: 15px;
+            }
+
+            .trending-header {
+                align-items: flex-start;
+            }
+
+            .trending-header h1 {
+                font-size: 24px;
+            }
+
+            .trending-card {
+                align-items: flex-start;
+            }
+
+            .trending-card img {
+                width: 70px;
+                height: 70px;
+            }
+
+            .trend-btn {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="trending-admin">
+
+        <div class="trending-header">
+
+            <div>
+                <h1>🔥 Manage Trending</h1>
+                <p>AI Trending Pic</p>
+            </div>
+
+            <a href="admin-dashboard.html" class="back-btn">
+                ← Dashboard
+            </a>
+
+        </div>
+
+
+        <div id="trendingList" class="trending-list">
+            <div class="loading">
+                Loading prompts...
+            </div>
+        </div>
+
+    </main>
+
+
+    <script type="module">
+
+        import {
+            getAuth,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+        import {
+            doc,
+            updateDoc
+        } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+        import {
+            app,
+            db,
+            getFirebasePrompts
+        } from "./firebase.js";
+
+
+        const auth = getAuth(app);
+
+        const trendingList =
+            document.getElementById("trendingList");
+
+
+        onAuthStateChanged(auth, async (user) => {
+
+            if (!user) {
+                window.location.href = "admin.html";
+                return;
+            }
+
+            loadTrending();
+
+        });
+
+
+        async function loadTrending() {
+
+            try {
+
+                const prompts =
+                    await getFirebasePrompts();
+
+
+                if (!prompts.length) {
+
+                    trendingList.innerHTML =
+                        `<div class="loading">
+                            No prompts found.
+                        </div>`;
+
+                    return;
+                }
+
+
+                trendingList.innerHTML = "";
+
+
+                prompts.forEach((prompt) => {
+
+                    const isTrending =
+                        prompt.trending === true;
+
+
+                    const card =
+                        document.createElement("div");
+
+                    card.className =
+                        "trending-card";
+
+
+                    card.innerHTML = `
+
+                        <img
+                            src="${prompt.image || ""}"
+                            alt="${prompt.title || "AI Photo"}"
+                        >
+
+                        <div class="trending-info">
+
+                            <h3>
+                                ${prompt.title || "Untitled Prompt"}
+                            </h3>
+
+                            <p>
+                                ${prompt.category || "AI"}
+                            </p>
+
+                            <p>
+                                ❤️ ${Number(prompt.likes) || 0}
+                                &nbsp;&nbsp;
+                                👁️ ${Number(prompt.views) || 0}
+                            </p>
+
+                            <div class="trending-status ${
+                                isTrending
+                                    ? "status-on"
+                                    : "status-off"
+                            }">
+
+                                ${
+                                    isTrending
+                                        ? "🔥 Trending ON"
+                                        : "Trending OFF"
+                                }
+
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            class="trend-btn ${
+                                isTrending ? "" : "off"
+                            }"
+                        >
+                            ${
+                                isTrending
+                                    ? "Remove"
+                                    : "Make Trending"
+                            }
+                        </button>
+
+                    `;
+
+
+                    const button =
+                        card.querySelector(".trend-btn");
+
+
+                    button.addEventListener(
+                        "click",
+                        async () => {
+
+                            button.disabled = true;
+
+                            try {
+
+                                const newStatus =
+                                    !isTrending;
+
+
+                                await updateDoc(
+                                    doc(
+                                        db,
+                                        "prompts",
+                                        prompt.id
+                                    ),
+                                    {
+                                        trending: newStatus
+                                    }
+                                );
+
+
+                                loadTrending();
+
+
+                            } catch (error) {
+
+                                console.error(
+                                    "Trending update error:",
+                                    error
+                                );
+
+                                alert(
+                                    "Trending update nahi hua."
+                                );
+
+                                button.disabled = false;
+
+                            }
+
+                        }
+                    );
+
+
+                    trendingList.appendChild(card);
+
+                });
+
+
+            } catch (error) {
+
+                console.error(
+                    "Trending load error:",
+                    error
+                );
+
+                trendingList.innerHTML =
+                    `<div class="loading">
+                        Prompts load nahi ho pa rahe.
+                    </div>`;
+
+            }
+
+        }
+
+    </script>
+
+</body>
+
+</html>
